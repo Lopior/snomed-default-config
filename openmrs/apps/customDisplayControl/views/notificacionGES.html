@@ -1,0 +1,31 @@
+<section class="app-dashboard-integration">
+       <h2 class="section-title">{{::"DASHBOARD_TITLE_NOTIFICACION_GES" | translate }}</h2>
+       <table>
+              <thead>
+                     <tr>
+                            <th>problema_ges</th>
+                            <th>fecha</th>
+                            <th>estado</th>
+                            <th>acciones</th>
+                     </tr>
+              </thead>
+              <tbody>
+                     <tr ng-repeat="notificacion in notificaciones">
+                            <td>{{ notificacion.problema_ges }}</td>
+                            <td>{{ notificacion.fecha }}</td>
+                            <td ng-if="notificacion.estado == 'P'">Pendiente</td>
+                            <td ng-if="notificacion.estado == 'N'">Notificada</td>
+                            <td ng-if="notificacion.estado == 'D'">Descartada</td>
+                            <td ng-if="notificacion.estado == 'F'">Firmada por Paciente</td>
+                            <td ng-if="notificacion.estado == 'P'">
+                                   <button ng-click="Notificar(notificacion.id)">Notificar</button>
+                                   <button ng-click="descartarNotificacion(notificacion.id)">Descartar</button>
+                            </td>
+                            <td ng-if="notificacion.estado == 'N' || notificacion.estado == 'F' ">
+                                   <button ng-click="VerNotificaciom(notificacion.id)">Ver</button>
+                            </td>
+                            <td ng-if="notificacion.estado == 'D'"></td>
+                     </tr>
+              </tbody>
+       </table>
+</section>

@@ -16,6 +16,91 @@ angular.module('bahmni.common.displaycontrol.custom')
                 template: '<ng-include src="contentUrl"/>',
                 link: link
             }
+            
+        }]).directive('notificacionGes', ['$window', 'appService','$cookies', function ($window, appService, $cookies) {
+            var link = function ($scope) {
+                $scope.contentUrl = appService.configBaseUrl() + "/customDisplayControl/views/notificacionGES.html";
+    
+                $scope.user_cookie = $cookies.get('bahmni.user');
+                
+                console.log($scope);
+    
+                // Obtener la dirección IP del host
+                var hostfrontend = $window.location.host + '/notificacion';
+                var hostbackend = $window.location.host + '/apinotificacion';
+    
+                fetch('http://' + hostbackend + '/ges?patientidentifier=' + $scope.patient.identifier)
+                //fetch('http://127.0.0.1:5001/ges?patientidentifier=' + $scope.patient.identifier)
+                    .then(response => response.json())
+                    .then(data => {
+                        $scope.notificaciones = data;
+                        console.log(data);
+                    })
+                    .catch(error => console.error(error));
+    
+                $scope.descartarNotificacion = function (id) {
+                    console.log("descartar notificacion" + id);
+    
+                    //actualizar estado de la notificacion con put a la api enviando el id de la notificacion y el estado DESCARTADO
+                    fetch('http://' + hostbackend + '/ges/' + id + '/D?practitioner=' + $scope.user_cookie, {
+                    //fetch('http://127.0.0.1:5001/ges/' + id + '/D?practitioner=' + $scope.user_cookie, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Descartar Success:', data);
+    
+                            //actualizar contenido del template
+                            fetch('http://' + hostbackend + '/ges?patientidentifier=' + $scope.patient.identifier)
+                            //fetch('http://127.0.0.1:5001/ges?patientidentifier=' + $scope.patient.identifier)
+                                .then(response => response.json())
+                                .then(data => {
+                                    $scope.$evalAsync(function () {
+                                        $scope.notificaciones = data;
+                                        console.log(data);
+                                    });
+                                })
+                                .catch(error => console.error(error));
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+    
+                }
+    
+                $scope.Notificar = function (id) {
+                    console.log("Notificar:" + id);
+                    //Abre el formulario para notificar en una nueva ventana del navegador
+                    //agregar en url el prestador desde el scope
+                    //$window.open('http://127.0.0.1:5000/notificacionges/' + id+'?practitioner=' + $scope.user_cookie);
+                    $window.open('http://' + hostfrontend + '/notificacionges/' + id+'?practitioner=' + $scope.user_cookie);
+    
+                    // + '&practitioner=' + $scope.practitioner.uuid);
+    
+                }
+                $scope.VerNotificaciom = function (id) {
+                    console.log("Ver:" + id);
+                    //Abre el formulario para ver la notificacion en una nueva ventana del navegador
+                    //agregar en url el prestador desde el scope
+                    $window.open('http://' + hostfrontend + '/vernotificacionges/' + id);
+                    //$window.open('http://127.0.0.1:5000/vernotificacionges/' + id);
+                }
+            }
+            
+            return {
+                restrict: 'E',
+                link: link,
+                scope: {
+                    patient: "=",
+                    section: "=",
+                    config: "="
+                },
+                template: '<ng-include src="contentUrl"/>'
+            }
+
     }]).directive('deathCertificate', ['observationsService', 'appService', 'spinner', function (observationsService, appService, spinner) {
         var link = function ($scope) {
             var conceptNames = ["WEIGHT"];
