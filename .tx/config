@@ -1,6 +1,6 @@
 [main]
 host = https://www.transifex.com
-minimum_perc = 40
+minimum_perc = 39
 
 [o:openmrs:p:bahmni:r:default-customization-of-admin-app]
 file_filter = openmrs/i18n/admin/locale_<lang>.json
